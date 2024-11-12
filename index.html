@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slot Machine</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f0f0;
+            padding: 50px;
+        }
+        #slots {
+            font-size: 48px;
+            margin: 20px 0;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #result {
+            font-size: 24px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Slot Machine</h1>
+    <div id="slots">🎰 🎰 🎰</div>
+    <button id="spinButton">Spin</button>
+    <div id="result"></div>
+
+    <script>
+        const symbols = ['🍒', '🍋', '🍊', '🍉', '🍇', '⭐', '💰'];
+        const slotsElement = document.getElementById('slots');
+        const resultElement = document.getElementById('result');
+        const spinButton = document.getElementById('spinButton');
+
+        function getRandomSymbol() {
+            return symbols[Math.floor(Math.random() * symbols.length)];
+        }
+
+        function flashSlots(duration) {
+            const endTime = Date.now() + duration;
+            const interval = setInterval(() => {
+                slotsElement.textContent = `${getRandomSymbol()} ${getRandomSymbol()} ${getRandomSymbol()}`;
+            }, 100);
+
+            return new Promise(resolve => {
+                const stopFlashing = () => {
+                    if (Date.now() < endTime) {
+                        requestAnimationFrame(stopFlashing);
+                    } else {
+                        clearInterval(interval);
+                        resolve();
+                    }
+                };
+                stopFlashing();
+            });
+        }
+
+        async function playSlotMachine() {
+            resultElement.textContent = ''; // Clear previous result
+            await flashSlots(2000); // Flash for 2 seconds
+            const finalSlots = [getRandomSymbol(1), getRandomSymbol(1), getRandomSymbol(1)];
+            slotsElement.textContent = finalSlots.join(' ');
+            if (finalSlots[0] === finalSlots[1] && finalSlots[1] === finalSlots[2]) {
+                resultElement.textContent = "Congratulations! You won!";
+            } else {
+                resultElement.textContent = "Sorry, you lost. Try again!";
+            }
+        }
+
+        spinButton.addEventListener('click', playSlotMachine);
+    </script>
+
+</body>
+</html>
